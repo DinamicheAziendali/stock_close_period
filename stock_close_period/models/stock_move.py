@@ -132,6 +132,9 @@ class StockMoveLine(models.Model):
         cumulative_qty = 0.0
         for move_id in move_ids.filtered(lambda m: m.purchase_line_id):
             purchase_line_id = move_id.purchase_line_id
+            line_price_unit = (
+                purchase_line_id.price_subtotal / purchase_line_id.product_uom_qty
+            )
             invoice_lines = self._get_right_invoice_lines(purchase_line_id)
             if invoice_lines:
                 cumulative_amount += sum(
@@ -142,12 +145,11 @@ class StockMoveLine(models.Model):
             elif (
                 purchase_line_id.currency_id == purchase_line_id.company_id.currency_id
             ):
-                price = purchase_line_id.price_unit
-                cumulative_amount += purchase_line_id.product_uom_qty * price
+                cumulative_amount += purchase_line_id.product_uom_qty * line_price_unit
                 cumulative_qty += purchase_line_id.product_uom_qty
             else:
                 price = purchase_line_id.currency_id._convert(
-                    purchase_line_id.price_unit,
+                    line_price_unit,
                     purchase_line_id.company_id.currency_id,
                     purchase_line_id.company_id,
                     move_id.date,
