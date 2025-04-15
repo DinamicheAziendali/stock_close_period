@@ -132,9 +132,12 @@ class StockMoveLine(models.Model):
         cumulative_qty = 0.0
         for move_id in move_ids.filtered(lambda m: m.purchase_line_id):
             purchase_line_id = move_id.purchase_line_id
-            line_price_unit = (
-                purchase_line_id.price_subtotal / purchase_line_id.product_uom_qty
-            )
+            if purchase_line_id.product_uom_qty:
+                line_price_unit = (
+                    purchase_line_id.price_subtotal / purchase_line_id.product_uom_qty
+                )
+            else:
+                line_price_unit = 0.0
             invoice_lines = self._get_right_invoice_lines(purchase_line_id)
             if invoice_lines:
                 cumulative_amount += sum(
