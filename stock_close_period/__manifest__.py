@@ -9,8 +9,9 @@
     "summary": "Stock Close Period",
     "version": "16.0.1.0.0",
     "category": "Stock",
-    "author": "Pordenone Linux User Group (PNLUG), Odoo Community Association (OCA)",
-    "website": "https://github.com/OCA/stock-logistics-workflow",
+    "author": "Pordenone Linux User Group (PNLUG), Odoo Community Association (OCA),"
+    "Dinamiche Aziendali srl, Sergio Corato",
+    "website": "https://github.com/DinamicheAziendali/stock_close_period",
     "license": "AGPL-3",
     "depends": [
         "stock",
@@ -18,12 +19,15 @@
         "stock_account",
         "report_xlsx",
     ],
+    "external_dependencies": {
+        "python": ["unicodecsv"],
+    },
     "data": [
         "security/stock_close_group.xml",
         "security/ir.model.access.csv",
         "data/ir_config_parameter_data.xml",
-        "views/stock_close_views.xml",
         "views/stock_close_line_views.xml",
+        "views/stock_close_views.xml",
         "wizards/stock_close_import.xml",
         "wizards/stock_close_print.xml",
         "reports/xlsx_stock_close_print.xml",

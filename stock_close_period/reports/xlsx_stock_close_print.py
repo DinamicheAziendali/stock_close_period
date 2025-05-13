@@ -4,6 +4,8 @@
 # @author: Giuseppe Borruso <gborruso@dinamicheaziendali.it>
 # License AGPL-3.0 or later (http://www.gnu.org/licenses/agpl).
 
+from xlsxwriter.utility import xl_rowcol_to_cell
+
 from odoo import _, models
 
 
@@ -33,8 +35,18 @@ class XlsxStockClosePeriod(models.AbstractModel):
         sheet.set_column(9, 9, 15)
         sheet.set_column(10, 10, 20)
 
-        title_style = workbook.add_format({"bold": False, "bg_color": "#C0C0C0", "bottom": 1})
+        title_style = workbook.add_format(
+            {"bold": False, "bg_color": "#C0C0C0", "bottom": 1}
+        )
         currency_format = workbook.add_format({"num_format": "€ #,##0.00"})
+        currency_format_title = workbook.add_format(
+            {
+                "num_format": "€ #,##0.00",
+                "bold": False,
+                "bg_color": "#C0C0C0",
+                "bottom": 1,
+            }
+        )
 
         # header
         sheet_title = [
@@ -59,7 +71,7 @@ class XlsxStockClosePeriod(models.AbstractModel):
         for row in lines:
             total_price = row.product_qty * row.price_unit
             sheet.write(i, 0, row.product_code or "")
-            sheet.write(i, 1, row.product_id.with_context({"lang": "it_IT"}).name or "")
+            sheet.write(i, 1, row.product_id.with_context(lang="it_IT").name or "")
             sheet.write(i, 2, row.categ_name or "")
             sheet.write(i, 3, row.location_id.display_name or "")
             sheet.write(i, 4, row.lot_id.name or "")
@@ -70,4 +82,15 @@ class XlsxStockClosePeriod(models.AbstractModel):
             sheet.write(i, 9, row.price_unit, currency_format)
             sheet.write(i, 10, total_price, currency_format)
             i += 1
-        return i
+        sheet.write(i, 9, _("Total"), title_style)
+        sheet.write_formula(
+            i,
+            10,
+            "=SUM(%s:%s)"
+            % (
+                xl_rowcol_to_cell(1, 10),
+                xl_rowcol_to_cell(i - 1, 10),
+            ),
+            currency_format_title,
+            "",
+        )

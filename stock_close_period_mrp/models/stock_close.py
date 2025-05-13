@@ -18,7 +18,8 @@ class StockClosePeriodInherit(models.Model):
 
     force_standard_price = fields.Boolean(
         default=False,
-        help="Forces the use of the standard price instead of calculating the cost from the BOM.",
+        help="Forces the use of the standard price instead of calculating the cost "
+        "from the BOM.",
     )
     production_ok = fields.Boolean(
         default=False,
@@ -34,11 +35,11 @@ class StockClosePeriodInherit(models.Model):
 
     def action_recalculate_production(self):
         for closing in self:
-            if not closing._check_qty_available():
+            if not closing.bypass_negative_qty and not closing._check_qty_available():
                 raise UserError(
                     _(
-                        "Is not possible continue the execution. "
-                        "There are product with quantities < 0."
+                        "Is not possible continue the execution. There are product "
+                        "with quantities < 0."
                     )
                 )
 

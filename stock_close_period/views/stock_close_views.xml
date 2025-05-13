@@ -1,11 +1,11 @@
-<?xml version="1.0" encoding="utf-8"?>
+<?xml version="1.0" encoding="utf-8" ?>
 <odoo>
 
     <record id="stock_close_period_tree" model="ir.ui.view">
         <field name="name">stock.close.period.tree</field>
         <field name="model">stock.close.period</field>
         <field name="arch" type="xml">
-            <tree string="stock close period">
+            <tree>
                 <field name="name" />
                 <field name="close_date" />
                 <field name="amount" />
@@ -62,13 +62,20 @@
                         type="object"
                         groups="stock_close_period.group_stock_close_period_manager"
                     />
-                    <field name="state" widget="statusbar" statusbar_visible="draft,confirm,done" />
+                    <field
+                        name="state"
+                        widget="statusbar"
+                        statusbar_visible="draft,confirm,done"
+                    />
                 </header>
                 <sheet>
                     <group>
                         <div class="oe_title">
                             <label for="name" class="oe_edit_only" />
-                            <h1><field name="name" placeholder="e.g. Annual Closing YEAR" /></h1>
+                            <h1><field
+                                    name="name"
+                                    placeholder="e.g. Annual Closing YEAR"
+                                /></h1>
                         </div>
                         <group>
                             <field name="close_date" />
@@ -85,16 +92,22 @@
                                 />
                             </div>
                             <field name="last_closed_id" />
-                            <field name="force_evaluation_method" />
+                            <field name="last_close_date" />
+                            <field
+                                name="force_evaluation_method"
+                                attrs="{'readonly': [('purchase_ok', '=', True)]}"
+                            />
                             <field name="force_archive" />
                             <field name="company_id" readonly="1" />
                             <field name="purchase_ok" />
+                            <field name="bypass_negative_qty" />
+                            <field name="no_recompute_lines" />
                         </group>
                     </group>
                     <notebook>
                         <page string="Product list">
                             <field name="line_ids">
-                                <tree string="stock Close Period Lines" editable="top">
+                                <tree editable="top">
                                     <field name="product_id" />
                                     <field name="categ_name" />
                                     <field name="location_id" />
@@ -105,12 +118,6 @@
                                     <field name="product_qty" />
                                     <field name="price_unit" />
                                     <field name="amount_line" />
-                                    <button
-                                        type="object"
-                                        name="goto_stock_close_period_line"
-                                        class="oe_button"
-                                        icon="fa-external-link"
-                                    />
                                 </tree>
                             </field>
                         </page>
