@@ -14,8 +14,9 @@ class XlsxStockClosePeriod(models.AbstractModel):
 
     def generate_xlsx_report(self, workbook, data, lines):
         if data.get("ids"):
-            ids = data["ids"]
-            lines = self.env["stock.close.period.line"].browse(ids)
+            lines = self.env["stock.close.period.line"].search(
+                [("close_id", "in", data["ids"])], order="product_code"
+            )
 
         sheet = workbook.add_worksheet(_("Stock Close Period"))
         sheet.set_landscape()
