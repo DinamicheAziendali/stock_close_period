@@ -5,10 +5,10 @@
 # License AGPL-3.0 or later (http://www.gnu.org/licenses/agpl).
 
 import base64
+import csv
+import io
 import logging
 from datetime import datetime
-
-import unicodecsv
 
 from odoo import _, fields, models
 from odoo.exceptions import UserError
@@ -28,7 +28,7 @@ class StockCloseImportWizard(models.TransientModel):
 
     def load_products(self, lines):
         products = {}
-        for _index, row in enumerate(lines):
+        for row in lines:
             default_code = row["CODE"]
             product_obj = self.env["product.product"].search(
                 [("default_code", "=", default_code)], limit=1
@@ -43,22 +43,13 @@ class StockCloseImportWizard(models.TransientModel):
         self.close_id.work_start = datetime.now()
 
         try:
-            file_to_import = base64.decodebytes(self.file).splitlines()
-            reader = unicodecsv.reader(file_to_import, encoding="utf-8", delimiter=";")
+            file_to_import = base64.b64decode(self.file)
+            data_file = io.StringIO(file_to_import.decode("utf-8"))
+            data_file.seek(0)
+            reader = csv.DictReader(data_file, delimiter=";")
             lines = []
-            headers = False
 
-            for _index, row in enumerate(reader):
-                headers = row
-                break
-
-            parsed_data_lines = unicodecsv.DictReader(
-                file_to_import, fieldnames=headers, encoding="utf-8", delimiter=";"
-            )
-
-            for index, row in enumerate(parsed_data_lines):
-                if index == 0:
-                    continue
+            for row in reader:
                 lines.append(
                     {
                         "CODE": str(row["CODE"]),
@@ -70,7 +61,7 @@ class StockCloseImportWizard(models.TransientModel):
             total = 0.0
             dp_qty = 4
             dp_price = 5
-            for _index, row in enumerate(lines):
+            for row in lines:
                 product_id = products[row["CODE"]].id
                 unit_cost = round(float(row["COST"]), dp_price)
                 qty = round(float(row["QTY"]), dp_qty)
