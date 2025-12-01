@@ -54,7 +54,7 @@ class Product(models.Model):
         )
 
         for row2 in self._cr.fetchall():
-            quant_qty = row2[0] * 1.0
+            quant_qty = float(row2[0] or 0.0) * 1.0
             product_id = row2[1]
             location_id = row2[2]
             lot_id = (
