@@ -143,7 +143,7 @@ class StockClosePeriod(models.Model):
                 .with_context(active_test=False)
                 .search(
                     [
-                        ("type", "!=", "service"),
+                        ("type", "=", "product"),
                     ]
                 )
             ]
